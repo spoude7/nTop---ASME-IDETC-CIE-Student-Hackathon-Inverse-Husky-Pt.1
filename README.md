@@ -118,7 +118,7 @@ bwb/
 models/ld_surrogate/      the provided L/D aerodynamic surrogate
 data/                     the provided BlendedNet++ structures dataset
 assets/                   the hackathon logo used on the report header
-results/                  THE SUanwarBMISSION: design variables, nothing else
+results/                  THE SUBMISSION: design variables, nothing else
 study/                    supporting measurements behind the report
 report/                   generated figures
 ```
