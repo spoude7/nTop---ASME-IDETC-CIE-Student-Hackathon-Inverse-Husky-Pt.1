@@ -1,31 +1,21 @@
 #!/usr/bin/env python3
-"""THE submission pipeline. Mission profile in, 21-variable design vector out.
+"""Final submission pipeline: mission profile in, 21-variable BWB design out.
 
-    python run_final.py                                  # the 3 public cases
-    python run_final.py --missions hidden_missions.json  # on the day
+Usage:
+    python run_final.py
+    python run_final.py --missions hidden_missions.json
 
-One solver, one budget, one acceptance rule:
+The pipeline uses warm-started differential evolution with 200,000 evaluations
+across seeds 0, 1, and 2. Initial populations are seeded from feasible dataset
+designs.
 
-    warm-started differential evolution, 200,000 evaluations, seeds 0/1/2.
+The published loss is minimized directly. Stress feasibility is enforced using
+a conformal margin on the surrogate prediction, with a final q=0.95 audit.
 
-DE warm-started from real dataset rows was the best performer measured at equal
-budget (see study/benchmark.json), so it is the only solver shipped. The
-population-based alternatives we tested -- NSGA-II in the 21-D box, a CVAE with
-NSGA-II in latent space -- are kept as evidence in run_benchmark.py and
-run_cvae_benchmark.py but are not part of this pipeline.
-
-Acceptance: the published loss is minimised directly. The dataset README makes
-mass the minimisation target and stress the constraint, and the organisers rank
-performance per case on the published loss, in which volume shortfalls are
-graded penalties capped at 0.2 rather than disqualifications.
-
-Stress: predicted stress must clear 335.3 MPa AFTER a conformal margin measured
-on held-out planforms. --q sets that margin (0.90 -> 2.48x the prediction).
-Every candidate is re-audited at q=0.95 afterwards and the result is recorded,
-so the risk position is explicit rather than assumed.
-
-Writes the submission itself to results/ (FINAL_DESIGNS.json, final_designs.csv)
-and the per-generation non-dominated front to study/pareto_evolution.json.
+Outputs are written to:
+    results/FINAL_DESIGNS.json
+    results/final_designs.csv
+    study/pareto_evolution.json
 """
 from __future__ import annotations
 
@@ -54,27 +44,21 @@ MISSION_SCHEMA = """[
 
 
 class TracedObjective(Objective):
-    """Objective with a CONFORMAL stress gate, tracing the front per generation.
+    """Objective with conformal stress gating and Pareto-front tracing.
 
-    Two changes from the base Objective:
+Changes from the base objective:
 
-    1. ACCEPTANCE. The base class accepts on the raw prediction (score_exact
-       returns inf only above 335.3 MPa) and uses the conformal stress merely as
-       a graded penalty in the guided loss. That makes the conformal quantile
-       decorative: the optimizer will happily return a design predicted at
-       300 MPa, whose 95th-percentile bound is over 1,100 MPa. Here the
-       conformal stress is a HARD acceptance test, so --q is a real risk dial
-       and the risk/performance trade-off can be swept.
-       Pass stress_gate="raw" to recover the old behaviour for comparison.
+1. Stress acceptance
+   Conformal stress is enforced as a hard feasibility gate instead of only
+   contributing to the guided penalty. Use stress_gate="raw" to reproduce the
+   original raw-prediction gate.
 
-    2. TRACING. DE evaluates its whole population in one vectorised call, so one
-       call is one generation. Only the Pareto-efficient (min mass, max L/D)
-       subset of the feasible individuals is stored -- a few dozen points per
-       generation rather than the entire population.
+2. Front tracing
+   After each DE population evaluation, only feasible Pareto-efficient points
+   in mass and L/D are stored.
 
-    __call__ is reimplemented rather than wrapped: calling super() would compute
-    the surrogates twice per evaluation and double the cost of a 200k run.
-    """
+__call__ is implemented directly to avoid evaluating the surrogate models twice.
+"""
 
     def __init__(self, *a, trace: bool = False, stress_gate: str = "conformal", **kw):
         super().__init__(*a, **kw)
@@ -158,10 +142,9 @@ def verify(row: dict) -> list[str]:
     """Every check here is a way to lose points on a technicality."""
     bad = []
     v = np.array([row[c] for c in DESIGN], dtype=float)
-    # "# of Fuselage Ribs" is an INDEX into FUSE_RIB_VALUES inside the search
-    # space (bounds 0-4) but is written out as the physical odd count (3-11), so
-    # range-checking it against the search bounds is wrong. Its legality is
-    # covered by the membership test below instead.
+    # "# of Fuselage Ribs" is optimized as an index (0-4) but exported as the
+# corresponding odd rib count (3-11). Validate the exported value using the
+# allowed-value check below rather than the search-space bounds..
     keep = [i for i, c in enumerate(DESIGN) if c != "# of Fuselage Ribs"]
     if not np.all((v[keep] >= LOWER[keep] - 1e-9) & (v[keep] <= UPPER[keep] + 1e-9)):
         bad.append("out of bounds")

@@ -36,26 +36,20 @@ MASS_MONOTONIC = {
 }
 
 
-# Per-target backend, chosen from results/model_comparison.csv (group-split R2)
-# plus an extrapolation-safety check over 20k random in-box designs:
+# Per-target backends were evaluated using group-split R2 and an extrapolation
+# check over 20k random in-bound designs:
 #
-#   mass    mlp     R2 0.9978  0.7 ms/1k   no absurd predictions
-#                   (poly2 scores 0.9930 but returns NEGATIVE mass on 0.5% of
-#                    the box -- and that is exactly where an optimizer goes)
-#   vpay    poly2   R2 0.9999  0.9 ms/1k   volume is near-polynomial in geometry
-#   vfuel   poly2   R2 0.9977  1.1 ms/1k
-#   stress  histgb  R2 0.7460  3.1 ms/1k   every backend lands at 0.72-0.75;
-#                   this target is noise-limited, so take the cheap one
+#   mass    mlp     R2 0.9978
+#   vpay    poly2   R2 0.9999
+#   vfuel   poly2   R2 0.9977
+#   stress  histgb  R2 0.7460
 #
-# NOT ADOPTED. The mix above looked better on paper and failed in practice:
-#   * it ran ~67x slower end-to-end than all-histgb, for reasons the per-batch
-#     profiling never reproduced -- so the cause is still unexplained;
-#   * and the loss comparison that motivated it was invalid, because each config
-#     scored its own designs with its OWN surrogates. Comparing losses across
-#     different surrogates compares referees, not designs.
-# A fair test needs ONE fixed referee model scoring both configs' outputs.
-# Until that exists, the default stays on the configuration that is fast, proven
-# end-to-end, and able to carry the verified monotonicity constraints on mass.
+# This mixed configuration was not adopted. It was substantially slower
+# end-to-end, and the original loss comparison was not fair because each setup
+# scored its own designs with different surrogate models.
+#
+# The default therefore remains all-HistGB until both configurations can be
+# compared using one fixed referee model.
 DEFAULT_BACKENDS = {"mass": "histgb", "stress": "histgb",
                     "vpay": "histgb", "vfuel": "histgb"}
 
@@ -135,7 +129,7 @@ class Surrogates:
 
         # Conformal one-sided margin on log-stress: how far truth exceeds prediction.
         # The stress model is by far the weakest of the four, so this margin is
-        # expensive -- the quantile is a genuine risk/mass dial, not a formality.
+        # expensive , the quantile is a genuine risk/mass dial, not a formality.
         resid = np.log10(df["Max Hotspot Stress"].to_numpy(float))[te] - \
             self.models["stress"].predict(X[te])
         self.conformal_table = {

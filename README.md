@@ -193,3 +193,10 @@ Stresses in MPa. Full detail, including the per-case loss decomposition, is in
   compliance requirement the formula does not contain.
 - Predicted stresses are surrogate estimates of a linear-elastic FE result. No
   independent FE validation was possible within the scope of the challenge.
+
+## Acknowledgements
+
+This project was developed for the
+[ASME IDETC/CIE 2026 Student Hackathon](https://event.asme.org/IDETC-CIE/Program/Student-Hackathon),
+with the challenge provided by nTop and the MIT DeCoDE Lab. The aerodynamic
+component builds on the provided BlendedNet++ surrogate and challenge dataset.

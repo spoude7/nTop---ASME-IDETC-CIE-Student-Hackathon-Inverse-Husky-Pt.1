@@ -129,21 +129,17 @@ def group_folds(groups, n_splits=4):
 
 
 def dataset_population(df, n, seed=0, jitter=0.02, bias="light_feasible"):
-    """Build a DE starting population from REAL rows of the provided CSV.
+    """Build the DE initial population from real dataset designs.
 
-    Uniform sampling of the 21-D box is hopeless: the dataset was Sobol-sampled
-    and occupies a thin manifold, so a uniform draw lands outside its support
-    essentially every time (measured: 10/10 random designs rejected on novelty).
-    The optimizer then spends most of its budget migrating into the region where
-    the surrogates actually have evidence.
+Seeding from dataset rows keeps the initial population within the region covered
+by the surrogate models.
 
-    Seeding from real designs starts the search inside that region.
+bias:
+    "none"           - uniform sampling from dataset rows
+    "light_feasible" - favor low-mass, stress-feasible designs
 
-    bias: "none"           -- sample rows uniformly
-          "light_feasible" -- prefer stress-feasible rows with low mass, which
-                              is the corner of the space the loss cares about
-    jitter: fraction of each variable's range added as noise, for diversity.
-    """
+jitter controls the added noise as a fraction of each variable's range.
+"""
     rng = np.random.default_rng(seed)
     d = df
     if bias == "light_feasible":
@@ -172,19 +168,14 @@ def dataset_population(df, n, seed=0, jitter=0.02, bias="light_feasible"):
 
 
 class MassFrontier:
-    """Empirical lower bound on mass, as a function of delivered volumes.
+    """Empirical mass lower bound based on delivered payload and fuel volumes.
 
-    The dataset answers a question no surrogate can: what is the LIGHTEST
-    aircraft anyone actually simulated that delivers at least this much payload
-    and fuel volume? A design claiming to beat that bound by a wide margin is
-    making a physical claim the training data contradicts -- which is exactly
-    the failure that invalidated four of six designs (one claimed 0.80 m3 of
-    payload at a third the mass of the lightest real aircraft delivering it).
+The bound is taken from the lightest dataset design providing at least the
+requested volumes. Mass and volume are geometric quantities, so no flight
+condition filtering is required.
 
-    Mass and volume are purely geometric, so no flight-condition filtering is
-    needed. Implemented as a 2-D suffix-minimum grid: O(1) lookup per design,
-    which matters because this runs on every evaluation.
-    """
+Implemented as a 2-D suffix-minimum grid for O(1) lookup during optimization.
+"""
 
     def __init__(self, df, n_grid: int = 80):
         vp = (df["Payload Volume"].to_numpy(float) / 1e9)
