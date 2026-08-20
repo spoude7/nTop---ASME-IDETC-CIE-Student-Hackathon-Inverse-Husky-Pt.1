@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The two trade studies behind the technical summary's main figure.
+"""The two trade studies behind report/fig2_constraints.
 
     python run_tradeoff.py [--budget 40000] [--seeds 0 1]
 

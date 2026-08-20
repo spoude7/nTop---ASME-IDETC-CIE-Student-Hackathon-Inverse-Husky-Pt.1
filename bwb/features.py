@@ -131,15 +131,13 @@ def group_folds(groups, n_splits=4):
 def dataset_population(df, n, seed=0, jitter=0.02, bias="light_feasible"):
     """Build the DE initial population from real dataset designs.
 
-Seeding from dataset rows keeps the initial population within the region covered
-by the surrogate models.
+    Seeding from dataset rows keeps the initial population within the region
+    covered by the surrogate models.
 
-bias:
-    "none"           - uniform sampling from dataset rows
-    "light_feasible" - favor low-mass, stress-feasible designs
-
-jitter controls the added noise as a fraction of each variable's range.
-"""
+    bias: "none"           -- uniform sampling from dataset rows
+          "light_feasible" -- favor low-mass, stress-feasible designs
+    jitter: added noise as a fraction of each variable's range.
+    """
     rng = np.random.default_rng(seed)
     d = df
     if bias == "light_feasible":
@@ -170,12 +168,12 @@ jitter controls the added noise as a fraction of each variable's range.
 class MassFrontier:
     """Empirical mass lower bound based on delivered payload and fuel volumes.
 
-The bound is taken from the lightest dataset design providing at least the
-requested volumes. Mass and volume are geometric quantities, so no flight
-condition filtering is required.
+    The bound is taken from the lightest dataset design providing at least the
+    requested volumes. Mass and volume are geometric quantities, so no flight
+    condition filtering is required.
 
-Implemented as a 2-D suffix-minimum grid for O(1) lookup during optimization.
-"""
+    Implemented as a 2-D suffix-minimum grid for O(1) lookup during optimization.
+    """
 
     def __init__(self, df, n_grid: int = 80):
         vp = (df["Payload Volume"].to_numpy(float) / 1e9)

@@ -1,1 +1,1 @@
-"""Figure generation for TECHNICAL_SUMMARY.tex."""
+"""Figure generation for the report figures in report/."""

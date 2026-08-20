@@ -129,7 +129,7 @@ class Surrogates:
 
         # Conformal one-sided margin on log-stress: how far truth exceeds prediction.
         # The stress model is by far the weakest of the four, so this margin is
-        # expensive , the quantile is a genuine risk/mass dial, not a formality.
+        # expensive -- the quantile is a genuine risk/mass dial, not a formality.
         resid = np.log10(df["Max Hotspot Stress"].to_numpy(float))[te] - \
             self.models["stress"].predict(X[te])
         self.conformal_table = {

@@ -37,6 +37,8 @@ from bwb.objective import PUBLIC_CASES, Mission, Objective, metrics, score_exact
 from bwb.solvers import solve_de_warm
 from bwb.surrogates import Surrogates
 
+DEFAULT_OUT = "results/FINAL_DESIGNS.json"
+
 MISSION_SCHEMA = """[
   {"name": "case1", "ld_target": 6.0, "v_payload_target": 0.75,
    "v_fuel_target": 0.45, "alt_kft": 15.0, "kcas": 120.0, "aoa_deg": 1.0}
@@ -46,19 +48,17 @@ MISSION_SCHEMA = """[
 class TracedObjective(Objective):
     """Objective with conformal stress gating and Pareto-front tracing.
 
-Changes from the base objective:
+    Changes from the base objective:
 
-1. Stress acceptance
-   Conformal stress is enforced as a hard feasibility gate instead of only
-   contributing to the guided penalty. Use stress_gate="raw" to reproduce the
-   original raw-prediction gate.
+    1. Stress acceptance. Conformal stress is enforced as a hard feasibility
+       gate instead of only contributing to the guided penalty. Use
+       stress_gate="raw" to reproduce the original raw-prediction gate.
 
-2. Front tracing
-   After each DE population evaluation, only feasible Pareto-efficient points
-   in mass and L/D are stored.
+    2. Front tracing. After each DE population evaluation, only feasible
+       Pareto-efficient points in mass and L/D are stored.
 
-__call__ is implemented directly to avoid evaluating the surrogate models twice.
-"""
+    __call__ is implemented directly to avoid evaluating the surrogates twice.
+    """
 
     def __init__(self, *a, trace: bool = False, stress_gate: str = "conformal", **kw):
         super().__init__(*a, **kw)
@@ -143,8 +143,8 @@ def verify(row: dict) -> list[str]:
     bad = []
     v = np.array([row[c] for c in DESIGN], dtype=float)
     # "# of Fuselage Ribs" is optimized as an index (0-4) but exported as the
-# corresponding odd rib count (3-11). Validate the exported value using the
-# allowed-value check below rather than the search-space bounds..
+    # corresponding odd rib count (3-11). Validate the exported value using the
+    # allowed-value check below rather than the search-space bounds.
     keep = [i for i, c in enumerate(DESIGN) if c != "# of Fuselage Ribs"]
     if not np.all((v[keep] >= LOWER[keep] - 1e-9) & (v[keep] <= UPPER[keep] + 1e-9)):
         bad.append("out of bounds")
@@ -170,7 +170,7 @@ def main():
     ap.add_argument("--stress-gate", default="conformal", choices=("conformal", "raw"),
                     dest="stress_gate",
                     help="accept on the conformal bound (default) or the raw prediction")
-    ap.add_argument("--out", default="results/FINAL_DESIGNS.json")
+    ap.add_argument("--out", default=DEFAULT_OUT)
     args = ap.parse_args()
 
     missions = ([Mission(**d) for d in json.load(open(args.missions))]
@@ -258,13 +258,21 @@ def main():
         print(f"      {m.name:24} q=0.95 bound {c95:6.1f} MPa  "
               f"{'PASS' if c95 <= STRESS_ALLOWABLE else 'OVER'}", flush=True)
 
+    # The CSV and the front trace follow --out, so a hidden-mission run cannot
+    # overwrite the submitted results/ files. The defaults are unchanged.
+    out_dir = os.path.dirname(args.out) or "."
+    stem = os.path.splitext(os.path.basename(args.out))[0].lower()
+    csv_path = os.path.join(out_dir, f"{stem}.csv")
+    trace_path = ("study/pareto_evolution.json" if args.out == DEFAULT_OUT
+                  else os.path.join(out_dir, f"{stem}_pareto_evolution.json"))
+
+    os.makedirs(out_dir, exist_ok=True)
+    os.makedirs(os.path.dirname(trace_path) or ".", exist_ok=True)
     json.dump({"solver": "de_warm", "budget": args.budget, "seeds": args.seeds,
                "conformal_q": args.q, "cases": out},
               open(args.out, "w"), indent=1)
-    os.makedirs("study", exist_ok=True)
-    json.dump(evo, open("study/pareto_evolution.json", "w"))
+    json.dump(evo, open(trace_path, "w"))
     sub = pd.DataFrame(rows)
-    csv_path = "results/final_designs.csv"
     sub.to_csv(csv_path, index=False)
 
     print(f"\n[4/4] verifying {csv_path} as written to disk", flush=True)
@@ -276,7 +284,7 @@ def main():
             print(f"      row {i} ({r['case']}): {', '.join(problems)}")
     print("      ALL CHECKS PASSED" if ok else "      FIX THE ABOVE BEFORE SUBMITTING")
     print(f"\nmean loss = {sub.loss.mean():.4f}    wrote {args.out}, {csv_path}, "
-          f"study/pareto_evolution.json")
+          f"{trace_path}")
 
 
 if __name__ == "__main__":

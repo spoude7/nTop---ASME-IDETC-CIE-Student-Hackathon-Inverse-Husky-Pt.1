@@ -1,20 +1,18 @@
 # BWB Inverse Design
 
 Automated inverse design for a Blended Wing Body aircraft: a mission profile in,
-a 21-variable design vector out — external planform and internal structure
+a 21-variable design vector out, with external planform and internal structure
 chosen together.
 
-**ASME IDETC/CIE 2026 Student Hackathon** · nTop / MIT DeCoDE
+**ASME IDETC/CIE 2026 Student Hackathon**, nTop / MIT DeCoDE
 
 ```
 mission profile              21-variable design vector
   L/D target                   10 planform  (chord & span ratios,
-  payload volume minimum   ->    sweep angles, centreline chord)
+  payload volume minimum         sweep angles, centreline chord)
   fuel volume minimum          11 structural (skin, spars, ribs,
   altitude / KCAS / AoA          wingbox cutout, fuselage members)
 ```
-
----
 
 ## Installation
 
@@ -28,7 +26,7 @@ pip install -r requirements.txt
 
 Four dependencies for the pipeline itself: `numpy`, `scipy`, `pandas`,
 `scikit-learn`. `matplotlib` is also listed, and is used only by
-`make_figures.py` — nothing in `bwb/` or `run_final.py` imports it.
+`make_figures.py`. Nothing in `bwb/` or `run_final.py` imports it.
 Tested on Python 3.12; 3.10+ should work.
 
 ## Usage
@@ -63,12 +61,13 @@ python run_final.py --missions hidden_missions.json
 | `--budget` | `200000` | surrogate evaluations per seed |
 | `--seeds` | `0 1 2` | random seeds; the best design across them is kept |
 | `--q` | `0.95` | conformal quantile used as the stress acceptance margin |
-| `--out` | `results/FINAL_DESIGNS.json` | output path |
+| `--stress-gate` | `conformal` | accept on the conformal bound or the raw prediction |
+| `--out` | `results/FINAL_DESIGNS.json` | output path; the CSV and front trace follow it |
 
 `python run_final.py --help` prints the full schema.
 
-**Runtime.** About **5 minutes per seed per case** — so ~50 minutes for the
-default 3 seeds × 3 cases on a normal desktop CPU. Reduce with
+**Runtime.** About **5 minutes per seed per case**, so about 50 minutes for the
+default 3 seeds by 3 cases on a normal desktop CPU. Reduce with
 `--seeds 0 1` (~35 min) or `--budget 50000` (~13 min), at some cost in quality.
 
 **Outputs**
@@ -94,20 +93,21 @@ cost far more than one design run, and nothing in the submitted designs depends
 on them.
 
 ```bash
-python run_tradeoff.py        # -> study/tradeoff.json
+python run_tradeoff.py
 python make_figures.py
 ```
 
 ## Repository structure
 
 ```
-run_final.py              the pipeline: mission -> design candidates
+run_final.py              the pipeline from mission to design candidates
 run_tradeoff.py           the stress and volume trade studies (figure 2)
 make_figures.py           builds every figure
 figures/
   utils.py                palette, plot style, axis chrome, result IO
-  tradeoff.py             figure 1 -- the three trade-off spaces
-  designs.py              figure 2 -- the submitted designs
+  pareto.py               figure 1, the search front
+  tradeoff.py             figure 2, the risk and compliance sweeps
+  designs.py              figure 3, the submitted designs
 bwb/
   features.py             column order, bounds, integer/odd snapping,
                           group splits, empirical mass frontier
@@ -117,7 +117,7 @@ bwb/
   solvers.py              warm-started differential evolution
 models/ld_surrogate/      the provided L/D aerodynamic surrogate
 data/                     the provided BlendedNet++ structures dataset
-assets/                   the hackathon logo used on the report header
+assets/                   the hackathon logo
 results/                  THE SUBMISSION: design variables, nothing else
 study/                    supporting measurements behind the report
 report/                   generated figures
@@ -129,14 +129,14 @@ There is no analytical inverse, so the pipeline fits a fast forward model of the
 physics and searches the design space against it.
 
 **Five forward models.** Four are fitted here from the provided 13,720-row
-structures dataset — mass, hot-spot stress, payload volume, fuel volume. The
+structures dataset: mass, hot-spot stress, payload volume, fuel volume. The
 fifth is the provided L/D aerodynamic surrogate, used unmodified.
 
 **Validation splits on planform group, never at random.** Each planform appears
-2–3 times in the dataset with different internal structure, and always at one
+2 to 3 times in the dataset with different internal structure, and always at one
 flight condition. A random split therefore leaves near-twins of every test row in
 training. Splitting on planform identity holds out unseen geometry *and* unseen
-flight conditions which is what a hidden mission is. Held-out R²: mass 0.989,
+flight conditions which is what a hidden mission is. Held-out R2: mass 0.989,
 payload volume 0.998, fuel volume 0.994, hot-spot stress 0.746.
 
 **Search is warm-started differential evolution**, 200,000 evaluations per seed
@@ -145,46 +145,47 @@ through the acceptance gates, and cheap to evaluate in batch, which is the
 regime a population method is for. "Warm-started" is one concrete change: the
 initial population is built from real, stress-feasible rows of the provided
 dataset rather than a Sobol draw, so generation zero already sits inside the
-feasible region. Measured against a cold start at equal budget under one
-referee, that single change moves mean loss from 0.436 to 0.383 (see
-`study/benchmark.json`).
+feasible region. At equal budget under one referee, the cold-start DE means
+0.436 across the benchmark missions (`study/benchmark.json`), and the shipped
+warm start beats both NSGA-II arms it was measured against
+(`study/cvae_benchmark.json`).
 
 **Stress is enforced against a conformal bound, not the raw prediction.** The
 stress model is the weak one, and it under-predicts on 44.8% of held-out designs.
 The held-out residual distribution is measured and its 95th percentile becomes an
-explicit margin (a factor of 3.65×), which acceptance tests directly. This is a
+explicit margin (a factor of 3.65), which acceptance tests directly. This is a
 hard gate rather than a penalty: with the raw prediction as the gate, the
 optimizer returns designs predicted near 300 MPa whose 95th-percentile bound
 exceeds 1,100 MPa.
 
 **Four further trust gates** reject candidates the surrogate is not entitled to
-score — an empirical mass frontier, K-fold ensemble disagreement above 10%,
+score: an empirical mass frontier, K-fold ensemble disagreement above 10%,
 novelty outside the data support, and bound-pinning. These *raise* the reported
 loss rather than lowering it, and the gated number is the one reported.
 
 ## Results
 
 Mean loss **0.3831** across the three public cases. All three clear the
-335.3 MPa allowable *after* the 3.65× conformal margin.
+335.3 MPa allowable *after* the 3.65 conformal margin.
 
-| case | loss | mass (kg) | L/D | payload (m³) | fuel (m³) | σ raw | σ at q=0.95 |
+| case | loss | mass (kg) | L/D | payload (m3) | fuel (m3) | stress raw | stress at q=0.95 |
 |---|---|---|---|---|---|---|---|
-| 1 · high-speed dash | 0.3450 | 33.9 | 6.76 | 0.698 | 0.316 | 61 | 234 |
-| 2 · max endurance | 0.3690 | 38.0 | 9.15 | 0.755 | 0.367 | 63 | 281 |
-| 3 · max capacity | 0.4352 | 19.5 | 15.41 | 0.321 | 0.184 | 89 | 317 |
+| 1 high-speed dash | 0.3450 | 33.9 | 6.76 | 0.698 | 0.316 | 61 | 234 |
+| 2 max endurance | 0.3690 | 38.0 | 9.15 | 0.755 | 0.367 | 63 | 281 |
+| 3 max capacity | 0.4352 | 19.5 | 15.41 | 0.321 | 0.184 | 89 | 317 |
 
 Stresses in MPa. Full detail, including the per-case loss decomposition, is in
 `results/FINAL_DESIGNS.json`.
 
 ## Notes and limitations
 
-- Hot-spot stress is noise-limited. A near-duplicate probe puts the achievable R²
-  ceiling near 0.80, and every model backend tried lands at 0.72–0.76. The
+- Hot-spot stress is noise-limited. A near-duplicate probe puts the achievable R2
+  ceiling near 0.80, and every model backend tried lands at 0.72 to 0.76. The
   conformal margin manages that uncertainty; it does not remove it, and the
   guarantee is marginal rather than conditional on any individual design.
 - 123 rows of the provided dataset are divergent FE solves and are dropped at
-  10⁴ MPa. There is no clean gap at that threshold — the largest kept value is
-  9,902 MPa and the smallest dropped one is 10,022 MPa — so the cutoff is a
+  10000 MPa. There is no clean gap at that threshold. The largest kept value is
+  9,902 MPa and the smallest dropped one is 10,022 MPa, so the cutoff is a
   judgement call. The ~40% of rows above the 335.3 MPa allowable are kept: they
   are the constraint boundary, not bad data.
 - The published loss caps each shortfall term at 0.2 while the mass term is

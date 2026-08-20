@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build every figure in TECHNICAL_SUMMARY.tex.
+"""Build every report figure.
 
     python make_figures.py
 
