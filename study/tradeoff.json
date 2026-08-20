@@ -1,0 +1,374 @@
+{
+ "budget": 20000,
+ "seed": 0,
+ "stress_gate": [
+  {
+   "gate": "raw",
+   "case": "case1_high_speed_dash",
+   "loss": 0.35319276907179337,
+   "mass": 38.32533985234339,
+   "stress_raw": 128.8309920865871,
+   "stress_q095": 482.00031269255277,
+   "passes_q095": false,
+   "effective_allowable": null,
+   "seconds": 39.49961946811527
+  },
+  {
+   "gate": "raw",
+   "case": "case2_max_endurance",
+   "loss": 0.3955472431972261,
+   "mass": 34.15316125723001,
+   "stress_raw": 104.39163111788446,
+   "stress_q095": 406.5867814319349,
+   "passes_q095": false,
+   "effective_allowable": null,
+   "seconds": 37.47062764992006
+  },
+  {
+   "gate": "raw",
+   "case": "case3_max_capacity",
+   "loss": 0.4385399345215421,
+   "mass": 28.91316352548621,
+   "stress_raw": 245.97146237796576,
+   "stress_q095": 1135.558982217228,
+   "passes_q095": false,
+   "effective_allowable": null,
+   "seconds": 38.27910561906174
+  },
+  {
+   "gate": "q=0.75",
+   "case": "case1_high_speed_dash",
+   "loss": 0.36055543946282786,
+   "mass": 34.366039892110976,
+   "stress_raw": 131.60378176340666,
+   "stress_q095": 528.9919501976167,
+   "passes_q095": false,
+   "effective_allowable": 225.35371752055408,
+   "seconds": 34.38148729992099
+  },
+  {
+   "gate": "q=0.75",
+   "case": "case2_max_endurance",
+   "loss": 0.41164712920176244,
+   "mass": 39.62612247786065,
+   "stress_raw": 88.96710884459014,
+   "stress_q095": 313.50077270263876,
+   "passes_q095": true,
+   "effective_allowable": 225.35371752055408,
+   "seconds": 30.58130102418363
+  },
+  {
+   "gate": "q=0.75",
+   "case": "case3_max_capacity",
+   "loss": 0.4992148196495036,
+   "mass": 22.694953112522708,
+   "stress_raw": 147.44297550559284,
+   "stress_q095": 483.18587468667425,
+   "passes_q095": false,
+   "effective_allowable": 225.35371752055408,
+   "seconds": 31.10045332601294
+  },
+  {
+   "gate": "q=0.90",
+   "case": "case1_high_speed_dash",
+   "loss": 0.39465674140945295,
+   "mass": 32.437045926137905,
+   "stress_raw": 63.62698158635602,
+   "stress_q095": 227.6414616495912,
+   "passes_q095": true,
+   "effective_allowable": 135.11522970646126,
+   "seconds": 32.05944901704788
+  },
+  {
+   "gate": "q=0.90",
+   "case": "case2_max_endurance",
+   "loss": 0.40761885489256267,
+   "mass": 34.30786517332132,
+   "stress_raw": 95.63275331033962,
+   "stress_q095": 389.68746153760793,
+   "passes_q095": false,
+   "effective_allowable": 135.11522970646126,
+   "seconds": 31.86207696213387
+  },
+  {
+   "gate": "q=0.90",
+   "case": "case3_max_capacity",
+   "loss": 0.4941360060834835,
+   "mass": 22.790006243505843,
+   "stress_raw": 85.61179947968205,
+   "stress_q095": 389.6868526145687,
+   "passes_q095": false,
+   "effective_allowable": 135.11522970646126,
+   "seconds": 31.821470480877906
+  },
+  {
+   "gate": "q=0.95",
+   "case": "case1_high_speed_dash",
+   "loss": 0.4227682533600525,
+   "mass": 23.239870951394806,
+   "stress_raw": 47.336287822180296,
+   "stress_q095": 173.6817095732985,
+   "passes_q095": true,
+   "effective_allowable": 91.8107351574127,
+   "seconds": 28.693646552972496
+  },
+  {
+   "gate": "q=0.95",
+   "case": "case2_max_endurance",
+   "loss": 0.4106320921464284,
+   "mass": 38.710976257152744,
+   "stress_raw": 91.14000174574403,
+   "stress_q095": 254.69683584318673,
+   "passes_q095": true,
+   "effective_allowable": 91.8107351574127,
+   "seconds": 30.017626584973186
+  },
+  {
+   "gate": "q=0.95",
+   "case": "case3_max_capacity",
+   "loss": 0.4594927579599163,
+   "mass": 19.766033525281138,
+   "stress_raw": 78.30138825195839,
+   "stress_q095": 308.49549893647134,
+   "passes_q095": true,
+   "effective_allowable": 91.8107351574127,
+   "seconds": 30.1259968560189
+  }
+ ],
+ "tolerance": [
+  {
+   "tau": 1.0,
+   "case": "case1_high_speed_dash",
+   "loss": 0.39133447445871367,
+   "mass": 48.91680930733921,
+   "stress_raw": 76.64035444911052,
+   "delivered_fraction": {
+    "ld": 1.1549925324804982,
+    "v_payload": 1.0226582726540459,
+    "v_fuel": 1.0139903987301422
+   },
+   "seconds": 30.6493105890695
+  },
+  {
+   "tau": 1.0,
+   "case": "case2_max_endurance",
+   "loss": 0.4965220747073627,
+   "mass": 62.06525933842033,
+   "stress_raw": 74.7433789972449,
+   "delivered_fraction": {
+    "ld": 1.0167977760782743,
+    "v_payload": 1.023773708363613,
+    "v_fuel": 1.0820675204440058
+   },
+   "seconds": 30.08744736900553
+  },
+  {
+   "tau": 1.0,
+   "case": "case3_max_capacity",
+   "loss": 1.425593570922458,
+   "mass": 178.19919636530727,
+   "stress_raw": 131.15677319096264,
+   "delivered_fraction": {
+    "ld": 1.0276923144693801,
+    "v_payload": 1.0497818307682434,
+    "v_fuel": 1.0988251922999883
+   },
+   "seconds": 29.19507756596431
+  },
+  {
+   "tau": 0.95,
+   "case": "case1_high_speed_dash",
+   "loss": 0.3771519416601475,
+   "mass": 46.034615437999804,
+   "stress_raw": 88.21172010385357,
+   "delivered_fraction": {
+    "ld": 1.202567736480972,
+    "v_payload": 0.9754803492144677,
+    "v_fuel": 0.9801445600047869
+   },
+   "seconds": 31.454887575935572
+  },
+  {
+   "tau": 0.95,
+   "case": "case2_max_endurance",
+   "loss": 0.39342040620311264,
+   "mass": 48.158664606928305,
+   "stress_raw": 76.79008981456725,
+   "delivered_fraction": {
+    "ld": 0.979393015105026,
+    "v_payload": 1.007150034439396,
+    "v_fuel": 0.9798515381565432
+   },
+   "seconds": 29.228279173839837
+  },
+  {
+   "tau": 0.95,
+   "case": "case3_max_capacity",
+   "loss": 1.7317681427947786,
+   "mass": 214.6296613518817,
+   "stress_raw": 115.56147200965803,
+   "delivered_fraction": {
+    "ld": 0.9540276488415899,
+    "v_payload": 0.973603036899188,
+    "v_fuel": 0.9987150543605988
+   },
+   "seconds": 31.141463187988847
+  },
+  {
+   "tau": 0.9,
+   "case": "case1_high_speed_dash",
+   "loss": 0.36338506958852307,
+   "mass": 45.384435327007694,
+   "stress_raw": 86.46498626557708,
+   "delivered_fraction": {
+    "ld": 1.272718917445561,
+    "v_payload": 1.0050434304304738,
+    "v_fuel": 0.9984520651376926
+   },
+   "seconds": 33.168522586114705
+  },
+  {
+   "tau": 0.9,
+   "case": "case2_max_endurance",
+   "loss": 0.4099521031643585,
+   "mass": 48.439267165901626,
+   "stress_raw": 61.16328893146912,
+   "delivered_fraction": {
+    "ld": 0.9415911436251865,
+    "v_payload": 0.9868381344202984,
+    "v_fuel": 0.9593808927687877
+   },
+   "seconds": 30.184156351024285
+  },
+  {
+   "tau": 0.9,
+   "case": "case3_max_capacity",
+   "loss": 1.1876202291281712,
+   "mass": 144.65334462970173,
+   "stress_raw": 121.15888274303595,
+   "delivered_fraction": {
+    "ld": 0.9442028966512407,
+    "v_payload": 0.9038297428959743,
+    "v_fuel": 1.0160951070454418
+   },
+   "seconds": 31.52850557793863
+  },
+  {
+   "tau": 0.8,
+   "case": "case1_high_speed_dash",
+   "loss": 0.34405417374661634,
+   "mass": 37.901959304850415,
+   "stress_raw": 67.0437105293733,
+   "delivered_fraction": {
+    "ld": 1.2096927419773953,
+    "v_payload": 0.9650925825966095,
+    "v_fuel": 0.8307149208643254
+   },
+   "seconds": 31.790304651018232
+  },
+  {
+   "tau": 0.8,
+   "case": "case2_max_endurance",
+   "loss": 0.39685575871831924,
+   "mass": 38.81548382391172,
+   "stress_raw": 45.30065193547787,
+   "delivered_fraction": {
+    "ld": 0.810891913910037,
+    "v_payload": 0.9320782209053187,
+    "v_fuel": 0.8253704245495175
+   },
+   "seconds": 31.49534515896812
+  },
+  {
+   "tau": 0.8,
+   "case": "case3_max_capacity",
+   "loss": 0.8725860638457568,
+   "mass": 100.45735194591569,
+   "stress_raw": 123.8011897771071,
+   "delivered_fraction": {
+    "ld": 0.9139803384649405,
+    "v_payload": 0.8416933160614618,
+    "v_fuel": 0.899690104081442
+   },
+   "seconds": 30.14866259484552
+  },
+  {
+   "tau": 0.6,
+   "case": "case1_high_speed_dash",
+   "loss": 0.3578547770863674,
+   "mass": 34.003301201463714,
+   "stress_raw": 69.34864060544054,
+   "delivered_fraction": {
+    "ld": 1.136811996904369,
+    "v_payload": 0.8724237386365044,
+    "v_fuel": 0.698434423990207
+   },
+   "seconds": 31.10204676911235
+  },
+  {
+   "tau": 0.6,
+   "case": "case2_max_endurance",
+   "loss": 0.3946474219761089,
+   "mass": 38.17397495872466,
+   "stress_raw": 37.211638751054664,
+   "delivered_fraction": {
+    "ld": 0.779414700815912,
+    "v_payload": 0.9440667451870186,
+    "v_fuel": 0.830240442465511
+   },
+   "seconds": 30.150246320990846
+  },
+  {
+   "tau": 0.6,
+   "case": "case3_max_capacity",
+   "loss": 0.6627585280769008,
+   "mass": 62.4804111976032,
+   "stress_raw": 109.81907438323665,
+   "delivered_fraction": {
+    "ld": 0.8885009742091773,
+    "v_payload": 0.6674528513770834,
+    "v_fuel": 0.6294699819333628
+   },
+   "seconds": 31.508293582126498
+  },
+  {
+   "tau": 0.0,
+   "case": "case1_high_speed_dash",
+   "loss": 0.4227682533600525,
+   "mass": 23.239870951394806,
+   "stress_raw": 47.336287822180296,
+   "delivered_fraction": {
+    "ld": 1.2136508990807822,
+    "v_payload": 0.4595485315630679,
+    "v_fuel": 0.3562050396924618
+   },
+   "seconds": 31.5353643510025
+  },
+  {
+   "tau": 0.0,
+   "case": "case2_max_endurance",
+   "loss": 0.4106320921464284,
+   "mass": 38.710976257152744,
+   "stress_raw": 91.14000174574403,
+   "delivered_fraction": {
+    "ld": 0.7685301387805059,
+    "v_payload": 0.9192542198893098,
+    "v_fuel": 0.8074942308841522
+   },
+   "seconds": 33.12408263096586
+  },
+  {
+   "tau": 0.0,
+   "case": "case3_max_capacity",
+   "loss": 0.4594927579599163,
+   "mass": 19.766033525281138,
+   "stress_raw": 78.30138825195839,
+   "delivered_fraction": {
+    "ld": 0.8777578441799274,
+    "v_payload": 0.4223171688317213,
+    "v_fuel": 0.19310253820001486
+   },
+   "seconds": 30.71780175808817
+  }
+ ]
+}

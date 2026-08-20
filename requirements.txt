@@ -1,0 +1,6 @@
+
+numpy>=1.23
+scipy>=1.9          # differential_evolution(integrality=...) requires >=1.9
+pandas>=1.5
+scikit-learn>=1.3   # HistGradientBoostingRegressor monotonic_cst
+matplotlib>=3.6     # make_figures.py only; the pipeline never imports it
