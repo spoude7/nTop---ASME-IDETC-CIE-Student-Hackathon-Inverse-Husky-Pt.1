@@ -1,4 +1,4 @@
-# BWB Inverse Design
+# BWB Inverse Design (Team: Inverse Husky Pt.1)
 
 Automated inverse design for a Blended Wing Body aircraft: a mission profile in,
 a 21-variable design vector out, with external planform and internal structure
