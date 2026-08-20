@@ -95,7 +95,7 @@ on them.
 
 ```bash
 python run_tradeoff.py        # -> study/tradeoff.json
-python make_figures.py        # -> report/fig*.pdf and .png
+python make_figures.py
 ```
 
 ## Repository structure
@@ -118,10 +118,9 @@ bwb/
 models/ld_surrogate/      the provided L/D aerodynamic surrogate
 data/                     the provided BlendedNet++ structures dataset
 assets/                   the hackathon logo used on the report header
-results/                  THE SUBMISSION: design variables, nothing else
+results/                  THE SUanwarBMISSION: design variables, nothing else
 study/                    supporting measurements behind the report
 report/                   generated figures
-TECHNICAL_SUMMARY.tex     the engineering report (LaTeX source)
 ```
 
 ## Method
@@ -175,25 +174,7 @@ Mean loss **0.3831** across the three public cases. All three clear the
 | 3 · max capacity | 0.4352 | 19.5 | 15.41 | 0.321 | 0.184 | 89 | 317 |
 
 Stresses in MPa. Full detail, including the per-case loss decomposition, is in
-`results/FINAL_DESIGNS.json` and in the technical summary.
-
-## Technical summary
-
-`TECHNICAL_SUMMARY.tex` is the LaTeX source for the **3-page** engineering
-report required by the problem statement: abstract, the pipeline as a flowchart,
-the optimization strategy, how the stress and volumetric constraints are handled,
-and the trade-off spaces. It uses only standard TeX Live packages (the flowchart
-is TikZ, drawn in the document) and pulls two figures from `results/`. Build it
-with:
-
-```bash
-python make_figures.py                                    # if report/fig*.pdf are missing
-pdflatex TECHNICAL_SUMMARY.tex && pdflatex TECHNICAL_SUMMARY.tex
-```
-
-The second pass resolves the figure and table cross-references. To build on
-Overleaf, upload `TECHNICAL_SUMMARY.tex` with `report/fig*.pdf` and `assets/`.
-The compiled `TECHNICAL_SUMMARY.pdf` is checked in.
+`results/FINAL_DESIGNS.json`.
 
 ## Notes and limitations
 
